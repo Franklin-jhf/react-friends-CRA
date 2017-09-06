@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Friend from './Friend';
-import frien
-import './App.css';
+import friends from './friends';
+import '../App.css';
 
 class FriendsList extends Component {
   constructor(props) {
@@ -19,6 +19,20 @@ class FriendsList extends Component {
   }
 
   render() {
+    const friendsList = friends.filter( friend => friend.name.toLowerCase().indexOf( this.state.searchText.toLowerCase() ) !== -1 )
+      .sort( (a, b) => a[this.state.orderBy] > b[this.state.orderBy])
+      .map( friend => (
+        <Friend
+          name = { friend.name }
+          pictureUrl = { friend.pic_square }
+          status = { friend.status ? friend.status.message : '' }
+          friendCount = { friend.friend_count }
+          currentLocation = { friend.current_location || {} }
+        />
+      ))
+
+    const displayFriends = this.state.order === 'ascending' ? friendsList : friendsList.slice().reverse();
+
     return (
       <div>
         <form className="form-inline searchForm" role="form">
@@ -26,7 +40,7 @@ class FriendsList extends Component {
 
             <input 
               className = "form-control" 
-              onChange={ this.handle.bind( this, "searchText" ) }
+              onChange={ this.handleChange.bind( this, "searchText" ) }
               placeholder = "Search For Friends"
               value = { this.state.searchText }
             />
@@ -53,7 +67,7 @@ class FriendsList extends Component {
         </form>
 
         <ul>
-          <Friend />
+          { friendsList }
         </ul>
       </div>
     );
